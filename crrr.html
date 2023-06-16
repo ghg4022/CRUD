@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>메모장</title>
+  <style>
+    .memo-container {
+      display: flex;
+      flex-direction: column;
+      width: 300px;
+    }
+    
+    .memo-input {
+      margin-bottom: 10px;
+    }
+    
+    .memo-list {
+      list-style-type: none;
+      padding: 0;
+    }
+    
+    .memo-list li {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 5px;
+    }
+    
+    .memo-list li button {
+      margin-left: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="memo-container">
+    <h1>메모장</h1>
+    <input type="text" id="memo-input" placeholder="메모를 입력하세요" class="memo-input">
+    <button onclick="addMemo()">추가</button>
+    <ul id="memo-list" class="memo-list"></ul>
+  </div>
+
+  <script>
+    let memos = [];
+
+    function addMemo() {
+      const input = document.getElementById('memo-input');
+      const memo = input.value;
+      
+      if (memo) {
+        memos.push(memo);
+        input.value = '';
+        renderMemos();
+      }
+    }
+
+    function editMemo(index) {
+      const newMemo = prompt('메모를 수정하세요', memos[index]);
+
+      if (newMemo) {
+        memos[index] = newMemo;
+        renderMemos();
+      }
+    }
+
+    function deleteMemo(index) {
+      memos.splice(index, 1);
+      renderMemos();
+    }
+
+    function renderMemos() {
+      const memoList = document.getElementById('memo-list');
+      memoList.innerHTML = '';
+
+      for (let i = 0; i < memos.length; i++) {
+        const memo = memos[i];
+        const listItem = document.createElement('li');
+        listItem.textContent = memo;
+
+        const editButton = document.createElement('button');
+        editButton.textContent = '수정';
+        editButton.onclick = function() {
+          editMemo(i);
+        };
+
+        const deleteButton = document.createElement('button');
+        deleteButton.textContent = '삭제';
+        deleteButton.onclick = function() {
+          deleteMemo(i);
+        };
+
+        listItem.appendChild(editButton);
+        listItem.appendChild(deleteButton);
+
+        memoList.appendChild(listItem);
+      }
+    }
+  </script>
+</body>
+</html>

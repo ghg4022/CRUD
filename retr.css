@@ -1,0 +1,30 @@
+.memo-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 300px;
+}
+
+.memo-input {
+  margin-bottom: 10px;
+}
+
+.memo-list {
+  list-style-type: none;
+  padding: 0;
+}
+
+.memo-list li {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 5px;
+}
+
+.memo-list li button {
+  margin-left: 5px;
+}
+
+.memo-image {
+  max-width: 200px;
+  max-height: 200px;
+}

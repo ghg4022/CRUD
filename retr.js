@@ -13,18 +13,23 @@ function saveMemos() {
 }
 
 function addMemo() {
-  const input = document.getElementById('memo-input');
-  const memo = input.value;
+  const titleInput = document.getElementById('memo-title-input');
+  const contentInput = document.getElementById('memo-content-input');
+  const title = titleInput.value;
+  const content = contentInput.value;
   const imageInput = document.getElementById('memo-image-input');
   const imageFile = imageInput.files[0];
 
-  if (memo || imageFile) {
+  if (title || content || imageFile) {
     const reader = new FileReader();
     reader.onload = function(event) {
       const imageUrl = event.target.result;
-      memos.push({ memo, imageUrl });
+      const currentDate = new Date();
+      const dateTime = currentDate.toLocaleString();
+      memos.push({ title, content, imageUrl, dateTime });
       saveMemos();
-      input.value = '';
+      titleInput.value = '';
+      contentInput.value = '';
       imageInput.value = '';
       renderMemos();
     };
@@ -48,10 +53,12 @@ function deleteImage(index) {
 
 function editMemo(index) {
   const memoObj = memos[index];
-  const newMemo = prompt('메모를 수정하세요', memoObj.memo);
+  const newTitle = prompt('메모 제목을 수정하세요', memoObj.title);
+  const newContent = prompt('메모 내용을 수정하세요', memoObj.content);
 
-  if (newMemo) {
-    memoObj.memo = newMemo;
+  if (newTitle || newContent) {
+    memoObj.title = newTitle;
+    memoObj.content = newContent;
     saveMemos();
     renderMemos();
   }
@@ -71,80 +78,94 @@ function editImage(index) {
         memoObj.imageUrl = imageUrl;
         saveMemos();
         renderMemos();
-      };
-      reader.readAsDataURL(imageFile);
-    }
-  };
-  imageInput.click();
-}
-
-function deleteMemo(index) {
-  memos.splice(index, 1);
-  saveMemos();
-  renderMemos();
-}
-
-function searchMemos() {
-  const searchInput = document.getElementById('search-input');
-  const searchText = searchInput.value.toLowerCase();
-      const filteredMemos = memos.filter(memo => memo.memo.toLowerCase().includes(searchText));
-      renderMemos(filteredMemos);
-    }
-
-    function renderMemos(memosToRender) {
-      const memoList = document.getElementById('memo-list');
-      memoList.innerHTML = '';
-
-      const memosToDisplay = memosToRender || memos;
-
-      for (let i = 0; i < memosToDisplay.length; i++) {
-        const memoObj = memosToDisplay[i];
-        const listItem = document.createElement('li');
-        listItem.textContent = memoObj.memo;
-
-        if (memoObj.imageUrl) {
-          const imageContainer = document.createElement('div');
-          const image = document.createElement('img');
-          image.src = memoObj.imageUrl;
-          image.alt = 'Memo Image';
-          image.classList.add('memo-image');
-          imageContainer.appendChild(image);
-
-          const editImageButton = document.createElement('button');
-          editImageButton.textContent = '사진 수정';
-          editImageButton.onclick = function() {
-            editImage(i);
-          };
-          imageContainer.appendChild(editImageButton);
-
-          const deleteImageButton = document.createElement('button');
-          deleteImageButton.textContent = '사진 삭제';
-          deleteImageButton.onclick = function() {
-            deleteImage(i);
-          };
-          imageContainer.appendChild(deleteImageButton);
-
-          listItem.appendChild(imageContainer);
+        };
+        reader.readAsDataURL(imageFile);
         }
-
-        const editButton = document.createElement('button');
-        editButton.textContent = '수정';
-        editButton.onclick = function() {
-          editMemo(i);
         };
-
-        const deleteButton = document.createElement('button');
-        deleteButton.textContent = '삭제';
-        deleteButton.onclick = function() {
-          deleteMemo(i);
-        };
-
-        listItem.appendChild(editButton);
-        listItem.appendChild(deleteButton);
-
-        memoList.appendChild(listItem);
-      }
-    }
-
-    // 페이지 로드 시 저장된 메모 불러오기
-    loadMemos();
+        imageInput.click();
+        }
+        function deleteMemo(index) {
+          memos.splice(index, 1);
+          saveMemos();
+          renderMemos();
+        }
+        
+        function searchMemos() {
+          const searchInput = document.getElementById('search-input');
+          const searchText = searchInput.value.toLowerCase();
+          const filteredMemos = memos.filter(
+            memo =>
+              memo.title.toLowerCase().includes(searchText) ||
+              memo.content.toLowerCase().includes(searchText)
+          );
+          renderMemos(filteredMemos);
+        }
+        
+        function renderMemos(memosToRender) {
+          const memoList = document.getElementById('memo-list');
+          memoList.innerHTML = '';
+        
+          const memosToDisplay = memosToRender || memos;
+        
+          for (let i = 0; i < memosToDisplay.length; i++) {
+            const memoObj = memosToDisplay[i];
+            const listItem = document.createElement('li');
+        
+            const titleElement = document.createElement('h2');
+            titleElement.textContent = memoObj.title;
+            listItem.appendChild(titleElement);
+        
+            const contentElement = document.createElement('p');
+            contentElement.textContent = memoObj.content;
+            listItem.appendChild(contentElement);
+        
+            if (memoObj.imageUrl) {
+              const imageContainer = document.createElement('div');
+              const image = document.createElement('img');
+              image.src = memoObj.imageUrl;
+              image.alt = 'Memo Image';
+              image.classList.add('memo-image');
+              imageContainer.appendChild(image);
+        
+              const editImageButton = document.createElement('button');
+              editImageButton.textContent = '사진 수정';
+              editImageButton.onclick = function() {
+                editImage(i);
+              };
+              imageContainer.appendChild(editImageButton);
+        
+              const deleteImageButton = document.createElement('button');
+              deleteImageButton.textContent = '사진 삭제';
+              deleteImageButton.onclick = function() {
+                deleteImage(i);
+              };
+              imageContainer.appendChild(deleteImageButton);
+        
+              listItem.appendChild(imageContainer);
+            }
+        
+            const editButton = document.createElement('button');
+            editButton.textContent = '수정';
+            editButton.onclick = function() {
+              editMemo(i);
+            };
+        
+            const deleteButton = document.createElement('button');
+            deleteButton.textContent = '삭제';
+            deleteButton.onclick = function() {
+              deleteMemo(i);
+            };
+        
+            const dateTimeElement = document.createElement('p');
+            dateTimeElement.textContent = memoObj.dateTime;
+            listItem.appendChild(dateTimeElement);
+        
+            listItem.appendChild(editButton);
+            listItem.appendChild(deleteButton);
+        
+            memoList.appendChild(listItem);
+          }
+        }
+        
+        // 페이지 로드 시 저장된 메모 불러오기
+        loadMemos();
